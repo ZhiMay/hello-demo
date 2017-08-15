@@ -1,5 +1,5 @@
 # README
-
+[Ruby on Rails 教程](https://railstutorial-china.org/book/)
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
