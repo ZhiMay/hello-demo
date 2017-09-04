@@ -8,6 +8,7 @@ class SessionsController < ApplicationController
     if user && user.authenticate(params[:session][:password])
       ## 登陆用户，然后重定向到用户的资料页面
       log_in user #创建临时会话,相当于cookie 
+      params[:session][:remember_me] == '1' ? remember(user) : forget(user) #记住密码
       redirect_to user #user_url(user)
     else
       #创建一个错误信息

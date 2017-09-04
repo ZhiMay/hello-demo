@@ -13,7 +13,8 @@ class UsersController < ApplicationController
     @user = User.new(user_params);
     if @user.save
 
-      log_in @user#注册后登入用户
+      log_in @user #注册后登入用户
+      remember user #记住登录状态 
       flash[:success] = "Welcome to the Sample App!"
       redirect_to @user 
       #不过，也可以写成：redirect_to user_url(@user)

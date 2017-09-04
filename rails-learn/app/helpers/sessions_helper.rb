@@ -13,13 +13,25 @@ module SessionsHelper
   #current_user 法可用于编写类似下面:
   # = current_user.name 
   # redirect_to current_user 
-  def current_user
-    if @current_user.nil?
-      @current_user = User.find_by(id: session[:user_id])
-    else
-      @current_user
+  # def current_user
+  #   if @current_user.nil?
+  #     @current_user = User.find_by(id: session[:user_id])
+  #   else
+  #     @current_user
+  #   end
+  #   ## @current_user ||= User.find_by(id: session[:user_id])
+  # end
+  def current_user#添加cookie 的做法
+    if (user_id = session[:user_id])
+      @current_user ||= User.find_by(id: user_id)
+    elsif (user_id = cookies.signed[:user_id])
+      user = User.find_by(id: user_id) 
+      if user && user.authenticated?(cookies[:remember_token])
+        log_in user
+        @current_user = user
+      end
     end
-    ## @current_user ||= User.find_by(id: session[:user_id])
+    
   end
   # 如果用户已登录，返回 true，否则返回 false
   def logged_in?
@@ -27,7 +39,21 @@ module SessionsHelper
   end
   ## 退出当前用户
   def log_out
+    forget(current_user)
     session.delete(:user_id)
     @current_user = nil;
   end
+  # 忘记持久会话
+  def forget(user)
+    user.forget 
+    cookies.delete(:user_id)
+    cookies.delete(:remember_token)
+  end
+  # 在持久会话中记住用户
+  def remember(user)
+    user.remember
+    cookies.permanent.signed[:user_id] = user.id
+    cookies.permanent[:remember_token] = user.remember_token
+  end
+
 end
