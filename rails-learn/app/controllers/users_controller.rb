@@ -12,6 +12,9 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params);
     if @user.save
+
+      log_in @user#注册后登入用户
+      flash[:success] = "Welcome to the Sample App!"
       redirect_to @user 
       #不过，也可以写成：redirect_to user_url(@user)
       #创建成功后，会重定向到一个地址
